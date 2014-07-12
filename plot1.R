@@ -5,19 +5,19 @@ filename <- 'exdata-data-household_power_consumption.zip'
 download.file(url, destfile = filename, method = 'auto')
 unzip(filename)
 
-data_full <- read.table('household_power_consumption.txt', header = TRUE, sep = ";")
-head(data_full)
+
 
 ## subset and format 
-data_full$Date <- as.Date(data_full$Date, format="%d/%m/%Y")
-data <- subset(data_full, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
-datetime <- paste(as.Date(data$Date), data$Time)
-data$Datetime <- as.POSIXct(datetime)
+data <- read.table("household_power_consumption.txt", header=T, sep=';', na.strings="?", colClasses=c("character","character","numeric","numeric","numeric","numeric","numeric","numeric","numeric"))
 head(data)
+data <- data[(data$Date == "1/2/2007") | (data$Date == "2/2/2007"),]
+data$DateTime <- strptime(paste(data$Date, data$Time), "%d/%m/%Y %H:%M:%S")
+head(data)
+summary(data)
 
-## Plot 1
-hist(as.double(data$Global_active_power), main="Global Active Power", 
-     xlab="Global Active Power (kilowatts)", ylab="Frequency", col="Red")
+## Plot 
+hist(data$Global_active_power, main="Global Active Power", xlab="Global Active Power (kilowatts)", col="red")
+
 
 ## Saving to file
 dev.copy(png, file="plot1.png", height=480, width=480)
